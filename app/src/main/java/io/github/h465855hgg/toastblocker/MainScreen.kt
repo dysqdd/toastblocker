@@ -33,6 +33,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Switch
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.core.net.toUri
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,6 +46,7 @@ fun MainScreen() {
 
     val context = LocalContext.current
     val isModuleActive = AppBridge.isModuleActive
+    var hideIcon by remember { mutableStateOf(LauncherIcon.isHidden(context)) }
 
 
     Scaffold(
@@ -60,6 +66,14 @@ fun MainScreen() {
         ) {
             // 状态卡片
             StatusCard(isActive = isModuleActive)
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // 设置卡片
+            SettingsCard(hideIcon = hideIcon, onHideIconChange = { checked ->
+                hideIcon = checked
+                LauncherIcon.setHidden(context, checked)
+            })
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -173,6 +187,52 @@ fun StatusCard(isActive: Boolean) {
                     },
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SettingsCard(hideIcon: Boolean, onHideIconChange: (Boolean) -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "设置",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "隐藏桌面图标",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Text(
+                        text = "隐藏后图标将从桌面消失，可通过 LSPosed 管理器重新打开本应用",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Switch(
+                    checked = hideIcon,
+                    onCheckedChange = onHideIconChange
                 )
             }
         }

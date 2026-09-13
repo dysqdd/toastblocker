@@ -13,13 +13,29 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.ToastBlocker" >
+            android:theme="@style/Theme.ToastBlocker" />
+
+        <!-- 桌面图标入口：通过 activity-alias 实现，可在运行时隐藏/显示 -->
+        <activity-alias
+            android:name=".MainActivityLauncher"
+            android:enabled="true"
+            android:exported="true"
+            android:targetActivity=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity-alias>
+
+        <!-- 隐藏图标后的恢复入口（adb 广播） -->
+        <receiver
+            android:name=".ShowIconReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="io.github.h465855hgg.toastblocker.SHOW_ICON" />
+            </intent-filter>
+        </receiver>
 
         <!-- Xposed 模块标识 -->
         <meta-data
